@@ -69,7 +69,7 @@ public class Archivo {
             pw.println(objeto.toString());
             pw.close();
             
-        }catch(Exception e){
+        }catch(IOException e){
             bandera = false;
             System.out.println(e);
         }
@@ -94,7 +94,7 @@ public class Archivo {
             oos.writeObject(objeto);
             oos.close();
             
-        }catch(Exception e){
+        }catch(IOException e){
             bandera = false;
         }
         
