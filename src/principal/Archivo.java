@@ -12,11 +12,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Clase para gestionar archivos, tanto lectura como escritura
- * @version 0.8
+ * @version 0.8.2
  * @author Guillermo Casas Reche
  * @author g.casas.r94@gmail.com
  */
@@ -149,15 +150,22 @@ public class Archivo {
     
     /**
      * Método para leer un archivo binario de Java y trasformarlo en una lista 
-     * de objetos. Esta clase necesita leer un binario que contenga una lista,
-     * de lo contrario devolverá un null.
+     * de objetos. Si el objeto leido no es una lista se le añadirá en un 
+     * ArrayList vacío.
      * @param url Direccion absoluta del archivo
      * @return List con los objetos obtenidos en el archivo
      */
     public List leerBinarioListas(String url){
-        Object aux = this.leer(url);
-        if(aux instanceof List == false)
-            aux = null;
-        return (List)aux;
+        Object aux = this.leerBinario(url);
+        System.out.println(aux);
+        List salida;
+        if(aux instanceof List == false){
+            System.out.println("[ADVERTENCIA]: El elemento leido no es una lista // " + aux.getClass());
+            salida = new ArrayList<>();
+            salida.add(aux);
+        }else{
+            salida = (List)aux;
+        }
+        return salida;
     }
 }
