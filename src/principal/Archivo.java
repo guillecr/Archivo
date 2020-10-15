@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * Clase para gestionar archivos, tanto lectura como escritura
- * @version 0.8.2
+ * @version 0.8.3
  * @author Guillermo Casas Reche
  * @author g.casas.r94@gmail.com
  */
@@ -157,7 +157,6 @@ public class Archivo {
      */
     public List leerBinarioListas(String url){
         Object aux = this.leerBinario(url);
-        System.out.println(aux);
         List salida;
         if(aux instanceof List == false){
             System.out.println("[ADVERTENCIA]: El elemento leido no es una lista // " + aux.getClass());
