@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<clientes>
+    <cliente>
+        <nombre>Guillermo</nombre>
+        <presupuesto>100</presupuesto>
+    </cliente>
+    <cliente>
+        <nombre>Sandra</nombre>
+        <presupuesto>200</presupuesto>
+    </cliente>
+</clientes>

@@ -14,6 +14,12 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+import com.google.gson.Gson;
 
 /**
  * Clase para gestionar archivos, tanto lectura como escritura
@@ -23,7 +29,6 @@ import java.util.List;
  */
 public class Archivo {
     
-
     /**
      * Método para crear un archivo en la dirección y con el nombre indicado 
      * @param url Direccion absoluta del archivo
@@ -33,19 +38,16 @@ public class Archivo {
         File f = null;
         FileWriter fw = null;
         boolean bandera = true;
-        
         try {
             f = new File(url);
             fw = new FileWriter(f,true);
-            fw.close();
-            
+            fw.close(); 
         } catch (FileNotFoundException ex) {
             System.out.println("ERROR: " + ex);
             bandera = false;
         } catch (IOException ex) {
             System.out.println("ERROR: " + ex);
         }
-        
         return bandera;
     }
     
@@ -69,12 +71,10 @@ public class Archivo {
             pw = new PrintWriter(fw);
             pw.println(objeto.toString());
             pw.close();
-            
         }catch(IOException e){
             bandera = false;
             System.out.println(e);
         }
-        
         return bandera;
     }
     
@@ -88,7 +88,6 @@ public class Archivo {
      */
     public boolean escribirBinario(String url, Object objeto, boolean ty) {
         boolean bandera = true;
-        
         try {
             FileOutputStream fos = new FileOutputStream(url,ty);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -98,7 +97,6 @@ public class Archivo {
         }catch(IOException e){
             bandera = false;
         }
-        
         return bandera;
     }
     
@@ -142,10 +140,32 @@ public class Archivo {
         }catch (EOFException e) {
             System.out.println("LECTURA CORRECTA");
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            System.out.println("[ERROR-LECTURA]: " + e);
             lectura = null;
         }
         return lectura;
+    }
+    
+    /**
+     * 
+     * @param url
+     * @return 
+     */
+    public Document leerXML(String url) {
+        Document salida = null;
+        try {
+            FileInputStream fis = new FileInputStream(url);
+            DocumentBuilder dBuilder = DocumentBuilderFactory.newDefaultInstance().newDocumentBuilder();
+
+            // En salida ya tenemos guardado el archivo XML en formato DOM que es manejable por JAVA
+            salida = dBuilder.parse(fis);
+            
+        } catch (FileNotFoundException ex) {
+            System.out.println(ex);
+        } catch (SAXException | IOException | ParserConfigurationException ex) {
+            System.out.println(ex);
+        }
+        return salida;
     }
     
     /**
@@ -167,4 +187,32 @@ public class Archivo {
         }
         return salida;
     }
+    
+    /**
+     * Metodo para transformar un archivo JSON en un objeto de java compatible.
+     * Hay que indicar que clase se quiere trasformar pero hay que trasformar
+     * la salida del método (Object) a la clase indicada. 
+     * ej: Pelicula peli_1 = archivo.parsearJSON(fichero,Pelicula.class);
+     * @param fichero String con formato JSON a trasformar.
+     * @param clase Clase a la que trasformar la información del JSON
+     * @return Objecto con el formato de la clase para parsear
+     */
+    public Object parsearJSON(String fichero, Class clase){
+        Gson gson = new Gson();
+        return gson.fromJson(fichero, clase);
+    }
+    
+    /**
+     * Método similar al parsearJSON pero en vez de entregar el texto con 
+     * formarto JSON, se entrega un archivo .JSON.
+     * Hay que indicar que clase se quiere obtener, pero hay que trasformar
+     * la salida del método (Object) a la clase indicada. 
+     * ej: Pelicula peli_1 = archivo.parsearJSON(url,Pelicula.class);
+     * @param url Dirección del archivo .json
+     * @param clase Clase a la que trasformar la información del JSON
+     * @return Objecto con el formato de la clase para parsear
+     */
+    public Object leerJSON(String url, Class clase){
+        return this.parsearJSON(this.leer(url), clase);
+    }  
 }
