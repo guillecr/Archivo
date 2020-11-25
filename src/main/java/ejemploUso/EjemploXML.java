@@ -15,8 +15,7 @@ import principal.Archivo;
 public class EjemploXML {
 
     public static void main(String[] args) {
-        Archivo arch = new Archivo();
-        Document doc = arch.leerXML("C:\\Users\\guill\\Documents\\DAM\\Repositorios\\Archivo\\data\\Clientes.xml");
+        Document doc = Archivo.leerXML("C:\\Users\\guill\\Documents\\DAM\\Repositorios\\Archivo\\data\\Clientes.xml");
         NodeList nodoCliente = doc.getElementsByTagName("cliente");
         for(int i=0;i<nodoCliente.getLength();i++){
             // Obtenemos el elemento en posicion i de cliente

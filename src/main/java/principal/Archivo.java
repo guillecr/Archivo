@@ -24,7 +24,7 @@ import com.google.gson.GsonBuilder;
 
 /**
  * Clase para gestionar archivos, tanto lectura como escritura
- * @version 0.8.6
+ * @version 0.9.2
  * @author Guillermo Casas Reche
  * @author g.casas.r94@gmail.com
  */
