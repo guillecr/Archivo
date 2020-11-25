@@ -20,21 +20,22 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * Clase para gestionar archivos, tanto lectura como escritura
- * @version 0.8.3
+ * @version 0.8.6
  * @author Guillermo Casas Reche
  * @author g.casas.r94@gmail.com
  */
-public class Archivo {
+public abstract class Archivo {
     
     /**
      * Método para crear un archivo en la dirección y con el nombre indicado 
      * @param url Direccion absoluta del archivo
      * @return Boleano indicando si el proceso ha sido satisfactorio
      */
-    public boolean crear(String url){
+    static public boolean crear(String url){
         File f = null;
         FileWriter fw = null;
         boolean bandera = true;
@@ -60,7 +61,7 @@ public class Archivo {
      * aplicará al objeto el método toString
      * @return boleano indicando si el procedimiento ha sido correcto
      */
-    public boolean escribir(String url, Object objeto,boolean ty){
+    static public boolean escribir(String url, Object objeto,boolean ty){
         File f = null;
         FileWriter fw = null;
         PrintWriter pw = null;
@@ -73,7 +74,7 @@ public class Archivo {
             pw.close();
         }catch(IOException e){
             bandera = false;
-            System.out.println(e);
+            System.out.println("[ERROR ESCRITURA] " + e);
         }
         return bandera;
     }
@@ -86,7 +87,7 @@ public class Archivo {
      * @param ty Tipo de escritura. True para añadir o False para sobreescribir
      * @return boleano indicando si el procedimiento ha sido correcto
      */
-    public boolean escribirBinario(String url, Object objeto, boolean ty) {
+    static public boolean escribirBinario(String url, Object objeto, boolean ty) {
         boolean bandera = true;
         try {
             FileOutputStream fos = new FileOutputStream(url,ty);
@@ -105,7 +106,7 @@ public class Archivo {
      * @param url Dirección absoluta del archivo de texto
      * @return String con el contenido del archivo leído
      */
-    public String leer(String url){
+    static public String leer(String url){
         StringBuilder salida = new StringBuilder();
         File f = new File(url);
         try {
@@ -128,7 +129,7 @@ public class Archivo {
      * @param url Dirección absoluta del archivo a leer
      * @return Object del archivo leído
      */
-    public Object leerBinario(String url){
+    static public Object leerBinario(String url){
        Object lectura = null;
         try{
             FileInputStream fis = new FileInputStream(url);
@@ -147,17 +148,19 @@ public class Archivo {
     }
     
     /**
-     * 
+     * Este método nos devuelve en formato <code>Document</code> el contenido 
+     * de un fichero .xml.
+     * A la función hay que entregarle la dirección y nombre del archivo
+     * Si este genera algun error, devolverá <code>null</code>
      * @param url
      * @return 
      */
-    public Document leerXML(String url) {
+    static public Document leerXML(String url) {
         Document salida = null;
         try {
             FileInputStream fis = new FileInputStream(url);
             DocumentBuilder dBuilder = DocumentBuilderFactory.newDefaultInstance().newDocumentBuilder();
-
-            // En salida ya tenemos guardado el archivo XML en formato DOM que es manejable por JAVA
+            
             salida = dBuilder.parse(fis);
             
         } catch (FileNotFoundException ex) {
@@ -172,11 +175,11 @@ public class Archivo {
      * Método para leer un archivo binario de Java y trasformarlo en una lista 
      * de objetos. Si el objeto leido no es una lista se le añadirá en un 
      * ArrayList vacío.
-     * @param url Direccion absoluta del archivo
+     * @param url Dirección absoluta del archivo
      * @return List con los objetos obtenidos en el archivo
      */
-    public List leerBinarioListas(String url){
-        Object aux = this.leerBinario(url);
+    static public List leerBinarioListas(String url){
+        Object aux = leerBinario(url);
         List salida;
         if(aux instanceof List == false){
             System.out.println("[ADVERTENCIA]: El elemento leido no es una lista // " + aux.getClass());
@@ -189,15 +192,16 @@ public class Archivo {
     }
     
     /**
-     * Metodo para transformar un archivo JSON en un objeto de java compatible.
-     * Hay que indicar que clase se quiere trasformar pero hay que trasformar
-     * la salida del método (Object) a la clase indicada. 
-     * ej: Pelicula peli_1 = archivo.parsearJSON(fichero,Pelicula.class);
+     * Método para transformar un archivo JSON en un objeto de java compatible.
+     * Hay que indicar que clase se quiere trasformar pero este devuelve un 
+     * <code>Object</code>, por lo que a la salida de esta función hay que 
+     * trasformarlo a la clase indicada. 
+     * ej: Pelicula peli_1 = (Pelicula) archivo.parsearJSON(fichero,Pelicula.class);
      * @param fichero String con formato JSON a trasformar.
      * @param clase Clase a la que trasformar la información del JSON
      * @return Objecto con el formato de la clase para parsear
      */
-    public Object parsearJSON(String fichero, Class clase){
+    static public Object parsearJSON(String fichero, Class clase){
         Gson gson = new Gson();
         return gson.fromJson(fichero, clase);
     }
@@ -207,12 +211,23 @@ public class Archivo {
      * formarto JSON, se entrega un archivo .JSON.
      * Hay que indicar que clase se quiere obtener, pero hay que trasformar
      * la salida del método (Object) a la clase indicada. 
-     * ej: Pelicula peli_1 = archivo.parsearJSON(url,Pelicula.class);
+     * ej: Pelicula peli_1 = (Pelicula) archivo.parsearJSON(url,Pelicula.class);
      * @param url Dirección del archivo .json
      * @param clase Clase a la que trasformar la información del JSON
      * @return Objecto con el formato de la clase para parsear
      */
-    public Object leerJSON(String url, Class clase){
-        return this.parsearJSON(this.leer(url), clase);
-    }  
+    static public Object leerJSON(String url, Class clase){
+        return parsearJSON(leer(url), clase);
+    }
+    
+    /**
+     * Método que nos devuelve un String en formato JSON de un objeto entregado
+     * 
+     * @param objeto Objeto a convertir
+     * @return String del objeto en formato JSON
+     */
+    static public String StringToJson(Object objeto){
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        return gson.toJson(objeto);
+    }
 }
